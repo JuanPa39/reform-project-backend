@@ -1,0 +1,55 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/plataforma_combustibles
+    username: admin
+    password: admin123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # DESHABILITAR data.sql COMPLETAMENTE
+  sql:
+    init:
+      mode: never
+
+  flyway:
+    enabled: false
+
+  main:
+    allow-circular-references: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: stationadviser@gmail.com
+    password: pnjsocvdqmhrkbmn
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+logging:
+  level:
+    org.springframework: INFO
+    com.plataforma: DEBUG
+    com.plataforma.combustible.config: DEBUG  # Para ver logs de DataInitializer
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+app:
+  base-url: http://localhost:8080
