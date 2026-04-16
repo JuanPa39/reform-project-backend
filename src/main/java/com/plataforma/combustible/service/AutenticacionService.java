@@ -22,50 +22,65 @@ public class AutenticacionService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final AuditoriaService auditoriaService;
 
-    public AutenticacionService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, EmailService emailService) {
+    public AutenticacionService(UsuarioRepository usuarioRepository,
+                                PasswordEncoder passwordEncoder,
+                                JwtService jwtService,
+                                AuthenticationManager authenticationManager,
+                                EmailService emailService,
+                                AuditoriaService auditoriaService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
+        this.auditoriaService = auditoriaService;
     }
 
     @Transactional
-public MensajeResponse register(RegisterRequest request) {
-    if (usuarioRepository.existsByEmail(request.getEmail())) {
+    public MensajeResponse register(RegisterRequest request) {
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            MensajeResponse response = new MensajeResponse();
+            response.setExito(false);
+            response.setMensaje("El email ya está registrado");
+            return response;
+        }
+        
+        Usuario usuario = new Usuario();
+        usuario.setNombre(request.getNombre());
+        usuario.setEmail(request.getEmail());
+        usuario.setContrasena(passwordEncoder.encode(request.getPassword()));
+        usuario.setTelefono(request.getTelefono());
+        
+        String rol = request.getRol();
+        if (rol == null || rol.isEmpty()) {
+            rol = "CLIENTE";
+        }
+        usuario.setRol(rol);
+        
+        usuario.setEnabled(false);
+        usuario.setConfirmationToken(UUID.randomUUID().toString());
+        usuario.setConfirmationTokenExpiry(LocalDateTime.now().plusHours(24));
+        
+        usuarioRepository.save(usuario);
+        
+        // ✅ REGISTRAR EN AUDITORÍA (después de guardar)
+        auditoriaService.registrar(
+            usuario.getEmail(),
+            "REGISTRO_USUARIO",
+            String.format("Nuevo usuario registrado con rol: %s", rol),
+            "Usuario",
+            usuario.getId()
+        );
+        
+        emailService.sendConfirmationEmail(usuario.getEmail(), usuario.getConfirmationToken());
+        
         MensajeResponse response = new MensajeResponse();
-        response.setExito(false);
-        response.setMensaje("El email ya está registrado");
+        response.setExito(true);
+        response.setMensaje("Usuario registrado. Por favor revisa tu email para confirmar tu cuenta");
         return response;
     }
-    
-    Usuario usuario = new Usuario();
-    usuario.setNombre(request.getNombre());
-    usuario.setEmail(request.getEmail());
-    usuario.setContrasena(passwordEncoder.encode(request.getPassword()));
-    usuario.setTelefono(request.getTelefono());
-    
-    // Usar el rol enviado, o por defecto "CLIENTE"
-    String rol = request.getRol();
-    if (rol == null || rol.isEmpty()) {
-        rol = "CLIENTE";
-    }
-    usuario.setRol(rol);
-    
-    usuario.setEnabled(false);
-    usuario.setConfirmationToken(UUID.randomUUID().toString());
-    usuario.setConfirmationTokenExpiry(LocalDateTime.now().plusHours(24));
-    
-    usuarioRepository.save(usuario);
-    
-    emailService.sendConfirmationEmail(usuario.getEmail(), usuario.getConfirmationToken());
-    
-    MensajeResponse response = new MensajeResponse();
-    response.setExito(true);
-    response.setMensaje("Usuario registrado. Por favor revisa tu email para confirmar tu cuenta");
-    return response;
-}
 
     public LoginResponse login(LoginRequest request) {
         authenticationManager.authenticate(
@@ -87,6 +102,15 @@ public MensajeResponse register(RegisterRequest request) {
         
         String jwtToken = jwtService.generateToken(usuario);
         String refreshToken = jwtService.generateRefreshToken(usuario);
+        
+        // ✅ REGISTRAR EN AUDITORÍA (después de obtener el usuario, antes del return)
+        auditoriaService.registrar(
+            usuario.getEmail(),
+            "LOGIN",
+            "Inicio de sesión exitoso",
+            "Usuario",
+            usuario.getId()
+        );
         
         LoginResponse response = new LoginResponse();
         response.setToken(jwtToken);
@@ -115,6 +139,15 @@ public MensajeResponse register(RegisterRequest request) {
         usuario.setConfirmationToken(null);
         usuario.setConfirmationTokenExpiry(null);
         usuarioRepository.save(usuario);
+        
+        // ✅ REGISTRAR EN AUDITORÍA
+        auditoriaService.registrar(
+            usuario.getEmail(),
+            "CONFIRMACION_EMAIL",
+            "Cuenta confirmada exitosamente",
+            "Usuario",
+            usuario.getId()
+        );
         
         MensajeResponse response = new MensajeResponse();
         response.setExito(true);

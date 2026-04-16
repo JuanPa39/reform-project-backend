@@ -21,16 +21,21 @@ public class InventarioService {
 
     private static final Logger log = LoggerFactory.getLogger(InventarioService.class);
     private static final double NIVEL_BAJO_GALONES = 500.0;
+    
     private final InventarioRepository inventarioRepository;
     private final CombustibleRepository combustibleRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AuditoriaService auditoriaService;
 
+    // Constructor con AuditoriaService
     public InventarioService(InventarioRepository inventarioRepository, 
                              CombustibleRepository combustibleRepository, 
-                             UsuarioRepository usuarioRepository) {
+                             UsuarioRepository usuarioRepository,
+                             AuditoriaService auditoriaService) {
         this.inventarioRepository = inventarioRepository;
         this.combustibleRepository = combustibleRepository;
         this.usuarioRepository = usuarioRepository;
+        this.auditoriaService = auditoriaService;
     }
 
     @Transactional
@@ -99,7 +104,16 @@ public class InventarioService {
             Inventario guardado = inventarioRepository.save(inventario);
             log.info("Inventario guardado con ID: {}", guardado.getId());
 
-            // 6. Crear respuesta
+            // 6. REGISTRAR EN AUDITORÍA (CORREGIDO)
+            auditoriaService.registrar(
+                usuario.getEmail(),
+                "REGISTRO_INVENTARIO",
+                String.format("Agregó %d galones de %s", request.getCantidad(), request.getTipoCombustible()),
+                "Inventario",
+                guardado.getId()
+            );
+
+            // 7. Crear respuesta
             InventarioResponse response = new InventarioResponse();
             response.setId(guardado.getId());
             response.setEstacionNombre(estacion.getNombre());
@@ -116,35 +130,33 @@ public class InventarioService {
         }
     }
 
-     public List<DisponibilidadResponse> getDisponibilidad() {
-    log.info("=== OBTENIENDO DISPONIBILIDAD DE INVENTARIO ===");
-    
-    String email = SecurityContextHolder.getContext().getAuthentication().getName();
-    Usuario usuario = usuarioRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
-    
-    Estacion estacion = usuario.getEstacion();
-    if (estacion == null) {
-        throw new RuntimeException("No tienes una estación asociada");
-    }
-    
-    List<Inventario> inventarios = inventarioRepository.findByEstacionId(estacion.getId());
-    
-    return inventarios.stream().map(inv -> {
-        DisponibilidadResponse response = new DisponibilidadResponse();
-        response.setCombustibleNombre(inv.getCombustible().getNombre());
-        response.setCantidadDisponible(inv.getCantidadDisponible().doubleValue());
-        response.setNivelBajo(inv.getCantidadDisponible().doubleValue() < NIVEL_BAJO_GALONES);
+    public List<DisponibilidadResponse> getDisponibilidad() {
+        log.info("=== OBTENIENDO DISPONIBILIDAD DE INVENTARIO ===");
         
-        // Calcular si aplica subsidio (ejemplo: solo para clientes con ciertos vehículos)
-        boolean aplicaSubsidio = false;
-        if (usuario.getRol().equals("Cliente")) {
-            // Lógica para determinar subsidio según tipo de vehículo
-            aplicaSubsidio = true; // Simplificado
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
+        
+        Estacion estacion = usuario.getEstacion();
+        if (estacion == null) {
+            throw new RuntimeException("No tienes una estación asociada");
         }
-        response.setAplicaSubsidio(aplicaSubsidio);
         
-        return response;
-    }).collect(Collectors.toList());
-}
+        List<Inventario> inventarios = inventarioRepository.findByEstacionId(estacion.getId());
+        
+        return inventarios.stream().map(inv -> {
+            DisponibilidadResponse response = new DisponibilidadResponse();
+            response.setCombustibleNombre(inv.getCombustible().getNombre());
+            response.setCantidadDisponible(inv.getCantidadDisponible().doubleValue());
+            response.setNivelBajo(inv.getCantidadDisponible().doubleValue() < NIVEL_BAJO_GALONES);
+            
+            boolean aplicaSubsidio = false;
+            if (usuario.getRol().equals("Cliente")) {
+                aplicaSubsidio = true;
+            }
+            response.setAplicaSubsidio(aplicaSubsidio);
+            
+            return response;
+        }).collect(Collectors.toList());
+    }
 }
