@@ -1,6 +1,8 @@
 package com.plataforma.combustible.entity;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,8 +22,8 @@ public class Estacion {
     private String ubicacion;
     private String telefono;
     private String horario;
-    private Double latitud;
-    private Double longitud;
+    private BigDecimal latitud;
+    private BigDecimal longitud;
     private boolean activa;
     private LocalDateTime fechaRegistro;
     
@@ -52,11 +54,11 @@ public class Estacion {
     public String getHorario() { return horario; }
     public void setHorario(String horario) { this.horario = horario; }
     
-    public Double getLatitud() { return latitud; }
-    public void setLatitud(Double latitud) { this.latitud = latitud; }
+    public BigDecimal getLatitud() { return latitud; }
+    public void setLatitud(BigDecimal latitud) { this.latitud = latitud; }
     
-    public Double getLongitud() { return longitud; }
-    public void setLongitud(Double longitud) { this.longitud = longitud; }
+    public BigDecimal getLongitud() { return longitud; }
+    public void setLongitud(BigDecimal longitud) { this.longitud = longitud; }
     
     public boolean isActiva() { return activa; }
     public void setActiva(boolean activa) { this.activa = activa; }

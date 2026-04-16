@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,11 +23,11 @@ public class EstacionController {
     
     private final EstacionRepository estacionRepository;
     private final UsuarioRepository usuarioRepository;
-    private final AuditoriaService auditoriaService;  // ← AGREGAR
+    private final AuditoriaService auditoriaService;
 
     public EstacionController(EstacionRepository estacionRepository,
                               UsuarioRepository usuarioRepository,
-                              AuditoriaService auditoriaService) {  // ← AGREGAR
+                              AuditoriaService auditoriaService) {
         this.estacionRepository = estacionRepository;
         this.usuarioRepository = usuarioRepository;
         this.auditoriaService = auditoriaService;
@@ -47,7 +48,6 @@ public class EstacionController {
             return ResponseEntity.badRequest().build();
         }
         
-        // Obtener usuario autenticado
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
         
@@ -56,10 +56,17 @@ public class EstacionController {
         estacion.setNit(request.getNit());
         estacion.setUbicacion(request.getUbicacion());
         estacion.setActiva(true);
+        estacion.setFechaRegistro(LocalDateTime.now());
+        
+        if (request.getLatitud() != null) {
+            estacion.setLatitud(request.getLatitud());
+        }
+        if (request.getLongitud() != null) {
+            estacion.setLongitud(request.getLongitud());
+        }
         
         Estacion saved = estacionRepository.save(estacion);
         
-        // ✅ REGISTRAR EN AUDITORÍA
         if (usuario != null) {
             auditoriaService.registrar(
                 usuario.getEmail(),
@@ -82,7 +89,6 @@ public class EstacionController {
             return ResponseEntity.notFound().build();
         }
         
-        // Obtener usuario autenticado
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
         
@@ -92,9 +98,15 @@ public class EstacionController {
         estacion.setNit(request.getNit());
         estacion.setUbicacion(request.getUbicacion());
         
+        if (request.getLatitud() != null) {
+            estacion.setLatitud(request.getLatitud());
+        }
+        if (request.getLongitud() != null) {
+            estacion.setLongitud(request.getLongitud());
+        }
+        
         Estacion updated = estacionRepository.save(estacion);
         
-        // ✅ REGISTRAR EN AUDITORÍA
         if (usuario != null) {
             auditoriaService.registrar(
                 usuario.getEmail(),
@@ -115,6 +127,8 @@ public class EstacionController {
         response.setNit(estacion.getNit());
         response.setUbicacion(estacion.getUbicacion());
         response.setActiva(estacion.isActiva());
+        response.setLatitud(estacion.getLatitud());
+        response.setLongitud(estacion.getLongitud());
         return response;
     }
 }

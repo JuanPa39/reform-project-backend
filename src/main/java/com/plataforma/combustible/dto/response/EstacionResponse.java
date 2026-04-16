@@ -1,11 +1,15 @@
 package com.plataforma.combustible.dto.response;
 
+import java.math.BigDecimal;
+
 public class EstacionResponse {
     private Long id;
     private String nombre;
     private String nit;
     private String ubicacion;
     private boolean activa;
+    private BigDecimal latitud;
+    private BigDecimal longitud;
 
     public EstacionResponse() {}
 
@@ -23,4 +27,11 @@ public class EstacionResponse {
     
     public boolean isActiva() { return activa; }
     public void setActiva(boolean activa) { this.activa = activa; }
+
+    public BigDecimal getLatitud() { return latitud; }
+    public void setLatitud(BigDecimal latitud) { this.latitud = latitud; }
+
+    public BigDecimal getLongitud() { return longitud; }
+    public void setLongitud(BigDecimal longitud) { this.longitud = longitud; }
+
 }
