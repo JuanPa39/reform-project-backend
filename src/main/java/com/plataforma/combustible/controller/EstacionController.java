@@ -22,11 +22,11 @@ public class EstacionController {
     
     private final EstacionRepository estacionRepository;
     private final UsuarioRepository usuarioRepository;
-    private final AuditoriaService auditoriaService;  // ← AGREGAR
+    private final AuditoriaService auditoriaService;
 
     public EstacionController(EstacionRepository estacionRepository,
                               UsuarioRepository usuarioRepository,
-                              AuditoriaService auditoriaService) {  // ← AGREGAR
+                              AuditoriaService auditoriaService) {
         this.estacionRepository = estacionRepository;
         this.usuarioRepository = usuarioRepository;
         this.auditoriaService = auditoriaService;
@@ -56,6 +56,7 @@ public class EstacionController {
         estacion.setNit(request.getNit());
         estacion.setUbicacion(request.getUbicacion());
         estacion.setActiva(true);
+        estacion.setZona(request.getZona());  // ← AGREGAR ZONA
         
         Estacion saved = estacionRepository.save(estacion);
         
@@ -64,7 +65,8 @@ public class EstacionController {
             auditoriaService.registrar(
                 usuario.getEmail(),
                 "CREACION_ESTACION",
-                String.format("Nueva estación: %s (NIT: %s)", request.getNombre(), request.getNit()),
+                String.format("Nueva estación: %s (NIT: %s) - Zona: %s", 
+                    request.getNombre(), request.getNit(), request.getZona()),
                 "Estacion",
                 saved.getId()
             );
@@ -87,10 +89,12 @@ public class EstacionController {
         Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
         
         String nombreAntiguo = estacion.getNombre();
+        String zonaAntigua = estacion.getZona();
         
         estacion.setNombre(request.getNombre());
         estacion.setNit(request.getNit());
         estacion.setUbicacion(request.getUbicacion());
+        estacion.setZona(request.getZona());
         
         Estacion updated = estacionRepository.save(estacion);
         
@@ -99,7 +103,8 @@ public class EstacionController {
             auditoriaService.registrar(
                 usuario.getEmail(),
                 "EDICION_ESTACION",
-                String.format("Estación actualizada: %s → %s", nombreAntiguo, request.getNombre()),
+                String.format("Estación actualizada: %s → %s (Zona: %s → %s)", 
+                    nombreAntiguo, request.getNombre(), zonaAntigua, request.getZona()),
                 "Estacion",
                 updated.getId()
             );
@@ -115,6 +120,7 @@ public class EstacionController {
         response.setNit(estacion.getNit());
         response.setUbicacion(estacion.getUbicacion());
         response.setActiva(estacion.isActiva());
+        response.setZona(estacion.getZona());  // ← AGREGAR ZONA EN RESPUESTA
         return response;
     }
 }

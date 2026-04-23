@@ -3,6 +3,7 @@ com\plataforma\combustible\dto\request\LoginRequest.class
 com\plataforma\combustible\service\SubsidioService.class
 com\plataforma\combustible\entity\Estacion.class
 com\plataforma\combustible\service\AuditoriaService.class
+com\plataforma\combustible\service\ReporteService.class
 com\plataforma\combustible\controller\EstacionController.class
 com\plataforma\combustible\controller\InventarioController.class
 com\plataforma\combustible\entity\ParametroSistema.class
@@ -31,7 +32,9 @@ com\plataforma\combustible\repository\CombustibleRepository.class
 com\plataforma\combustible\entity\Auditoria.class
 com\plataforma\combustible\repository\SubsidioRepository.class
 com\plataforma\combustible\dto\request\PrecioRequest.class
+com\plataforma\combustible\dto\response\ReporteZonaResponse.class
 com\plataforma\combustible\dto\response\LoginResponse.class
+com\plataforma\combustible\dto\response\DetalleEstacionResponse.class
 com\plataforma\combustible\repository\VehiculoRepository.class
 com\plataforma\combustible\dto\response\NormativaResponse.class
 com\plataforma\combustible\entity\Reporte.class

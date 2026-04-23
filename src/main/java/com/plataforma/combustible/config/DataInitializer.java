@@ -166,17 +166,18 @@ public class DataInitializer implements CommandLineRunner {
     }
     
     private Estacion crearEstacion(String nombre, String nit, String ubicacion, String telefono, String horario) {
-        return estacionRepository.findByNit(nit).orElseGet(() -> {
-            Estacion e = new Estacion();
-            e.setNombre(nombre);
-            e.setNit(nit);
-            e.setUbicacion(ubicacion);
-            e.setTelefono(telefono);
-            e.setHorario(horario);
-            e.setActiva(true);
-            e.setFechaRegistro(LocalDateTime.now());
-            log.info("   ✅ Estación creada: {}", nombre);
-            return estacionRepository.save(e);
+    return estacionRepository.findByNit(nit).orElseGet(() -> {
+        Estacion e = new Estacion();
+        e.setNombre(nombre);
+        e.setNit(nit);
+        e.setUbicacion(ubicacion);
+        e.setTelefono(telefono);
+        e.setHorario(horario);
+        e.setActiva(true);
+        e.setFechaRegistro(LocalDateTime.now());
+        e.setZona("Centro");  // ← AGREGAR ZONA (puede ser "Norte", "Sur", "Centro", "Oriente", "Occidente")
+        log.info("   ✅ Estación creada: {}", nombre);
+        return estacionRepository.save(e);
         });
     }
     

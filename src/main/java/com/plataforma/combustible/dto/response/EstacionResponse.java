@@ -6,8 +6,7 @@ public class EstacionResponse {
     private String nit;
     private String ubicacion;
     private boolean activa;
-
-    public EstacionResponse() {}
+    private String zona;  // ← AGREGAR
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -23,4 +22,7 @@ public class EstacionResponse {
     
     public boolean isActiva() { return activa; }
     public void setActiva(boolean activa) { this.activa = activa; }
+    
+    public String getZona() { return zona; }
+    public void setZona(String zona) { this.zona = zona; }
 }

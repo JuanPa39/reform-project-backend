@@ -24,6 +24,7 @@ C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-proje
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\request\RegisterRequest.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\request\ResetPasswordRequest.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\request\VentaRequest.java
+C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\response\DetalleEstacionResponse.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\response\DisponibilidadResponse.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\response\ErrorResponse.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\response\EstacionResponse.java
@@ -33,6 +34,7 @@ C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-proje
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\response\NormativaResponse.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\response\NotificacionResponse.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\response\PrecioResponse.java
+C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\response\ReporteZonaResponse.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\dto\response\VentaResponse.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\entity\Auditoria.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\entity\Combustible.java
@@ -82,5 +84,6 @@ C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-proje
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\service\AutenticacionService.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\service\EmailService.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\service\InventarioService.java
+C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\service\ReporteService.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\service\SubsidioService.java
 C:\Proyectos\reform-project-back-and-front\reform-project-back-main\reform-project-back-main\src\main\java\com\plataforma\combustible\service\VentaService.java

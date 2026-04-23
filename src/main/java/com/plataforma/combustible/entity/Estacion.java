@@ -16,6 +16,9 @@ public class Estacion {
     
     @Column(unique = true, nullable = false)
     private String nit;
+
+    @Column(nullable = false)
+    private String zona;
     
     private String ubicacion;
     private String telefono;
@@ -70,4 +73,8 @@ public class Estacion {
     // 🔑 GETTER Y SETTER PARA USUARIO
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+
+    //Getter y Setter para zona
+    public String getZona() { return zona; }
+    public void setZona(String zona) { this.zona = zona; } 
 }
