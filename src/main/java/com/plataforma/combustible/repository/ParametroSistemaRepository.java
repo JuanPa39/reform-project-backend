@@ -7,6 +7,10 @@ import java.util.Optional;
 
 @Repository
 public interface ParametroSistemaRepository extends JpaRepository<ParametroSistema, Long> {
+    
+    // ✅ AGREGAR ESTE MÉTODO
+    Optional<String> findValorByClave(String clave);
+    
+    // Ya existente
     Optional<ParametroSistema> findByClave(String clave);
-    boolean existsByClave(String clave);
 }

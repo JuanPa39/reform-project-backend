@@ -42,9 +42,13 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario")
     private List<Notificacion> notificaciones;
 
-    // RELACIÓN SIMPLE CON ESTACIÓN
-    @ManyToOne
-    @JoinColumn(name = "estacion_id")
+    // RELACIÓN CON ESTACIÓN A TRAVÉS DE LA TABLA usuario_estacion
+    @OneToOne
+    @JoinTable(
+        name = "usuario_estacion",
+        joinColumns = @JoinColumn(name = "usuario_id"),
+        inverseJoinColumns = @JoinColumn(name = "estacion_id")
+    )
     private Estacion estacion;
 
     public Usuario() {}

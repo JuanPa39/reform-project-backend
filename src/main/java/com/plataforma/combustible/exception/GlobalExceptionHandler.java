@@ -1,6 +1,9 @@
 package com.plataforma.combustible.exception;
 
 import com.plataforma.combustible.dto.response.MensajeResponse;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -56,5 +59,13 @@ public class GlobalExceptionHandler {
         response.setExito(false);
         response.setMensaje("Error interno del servidor: " + e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<MensajeResponse> handleEntityNotFound(EntityNotFoundException e) {
+        MensajeResponse response = new MensajeResponse();
+        response.setExito(false);
+        response.setMensaje(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }

@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "precios_combustible")  // ← Este ya está bien
+@Table(name = "precios_combustible")
 public class PrecioCombustible {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,14 +19,19 @@ public class PrecioCombustible {
     @JoinColumn(name = "combustible_id", nullable = false)
     private Combustible combustible;
     
-    @Column(nullable = false)
     private Double precio;
     
-    @Column(nullable = false)
+    @Column(name = "precio_original")
+    private Double precioOriginal;
+    
+    @Column(name = "normativa_aplicada")
+    private String normativaAplicada;
+    
     private LocalDate fecha;
     
-    private boolean precioRegulado;
-
+    @Column(name = "precio_regulado")
+    private Boolean precioRegulado = true;
+    
     // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -39,9 +45,15 @@ public class PrecioCombustible {
     public Double getPrecio() { return precio; }
     public void setPrecio(Double precio) { this.precio = precio; }
     
+    public Double getPrecioOriginal() { return precioOriginal; }
+    public void setPrecioOriginal(Double precioOriginal) { this.precioOriginal = precioOriginal; }
+    
+    public String getNormativaAplicada() { return normativaAplicada; }
+    public void setNormativaAplicada(String normativaAplicada) { this.normativaAplicada = normativaAplicada; }
+    
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
     
-    public boolean isPrecioRegulado() { return precioRegulado; }
-    public void setPrecioRegulado(boolean precioRegulado) { this.precioRegulado = precioRegulado; }
+    public Boolean getPrecioRegulado() { return precioRegulado; }
+    public void setPrecioRegulado(Boolean precioRegulado) { this.precioRegulado = precioRegulado; }
 }

@@ -123,4 +123,24 @@ public class EstacionController {
         response.setZona(estacion.getZona());  // ← AGREGAR ZONA EN RESPUESTA
         return response;
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteEstacion(@PathVariable Long id) {
+        if (!estacionRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        estacionRepository.deleteById(id);
+        
+        // Registrar en auditoría
+        auditoriaService.registrar(
+            SecurityContextHolder.getContext().getAuthentication().getName(),
+            "ELIMINACION_ESTACION",
+            "Estación eliminada ID: " + id,
+            "Estacion",
+            id
+        );
+        
+        return ResponseEntity.noContent().build();
+    }
 }

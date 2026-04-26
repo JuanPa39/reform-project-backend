@@ -15,14 +15,15 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     
     List<Venta> findByUsuarioIdOrderByFechaVentaDesc(Long usuarioId);
     
+    // ✅ AGREGAR ESTE MÉTODO
+    @Query("SELECT v FROM Venta v WHERE v.estacion.id = :estacionId AND v.fechaVenta BETWEEN :fechaInicio AND :fechaFin")
+    List<Venta> findByEstacionIdAndFechaVentaBetween(@Param("estacionId") Long estacionId, 
+                                                      @Param("fechaInicio") LocalDateTime fechaInicio, 
+                                                      @Param("fechaFin") LocalDateTime fechaFin);
+    
     @Query("SELECT v FROM Venta v WHERE v.estacion.id = :estacionId AND v.fechaVenta >= :fechaInicio")
     List<Venta> findVentasDelMes(@Param("estacionId") Long estacionId, @Param("fechaInicio") LocalDateTime fechaInicio);
     
     @Query("SELECT COALESCE(SUM(v.montoTotal), 0) FROM Venta v WHERE v.estacion.id = :estacionId AND v.fechaVenta >= :fechaInicio")
     Double sumMontoTotalDelMes(@Param("estacionId") Long estacionId, @Param("fechaInicio") LocalDateTime fechaInicio);
-
-    @Query("SELECT v FROM Venta v WHERE v.estacion.id = :estacionId AND v.fechaVenta BETWEEN :fechaInicio AND :fechaFin")
-List<Venta> findByEstacionIdAndFechaBetween(@Param("estacionId") Long estacionId, 
-                                            @Param("fechaInicio") LocalDateTime fechaInicio, 
-                                            @Param("fechaFin") LocalDateTime fechaFin);
 }

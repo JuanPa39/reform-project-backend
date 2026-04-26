@@ -1,19 +1,33 @@
 package com.plataforma.combustible.service;
 
-import com.plataforma.combustible.dto.request.VentaRequest;
-import com.plataforma.combustible.dto.response.VentaResponse;
-import com.plataforma.combustible.entity.*;
-import com.plataforma.combustible.repository.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.plataforma.combustible.dto.request.VentaRequest;
+import com.plataforma.combustible.dto.response.VentaResponse;
+import com.plataforma.combustible.entity.Combustible;
+import com.plataforma.combustible.entity.Estacion;
+import com.plataforma.combustible.entity.Inventario;
+import com.plataforma.combustible.entity.Notificacion;
+import com.plataforma.combustible.entity.PrecioCombustible;
+import com.plataforma.combustible.entity.Usuario;
+import com.plataforma.combustible.entity.Venta;
+import com.plataforma.combustible.repository.CombustibleRepository;
+import com.plataforma.combustible.repository.EstacionRepository;
+import com.plataforma.combustible.repository.InventarioRepository;
+import com.plataforma.combustible.repository.NotificacionRepository;
+import com.plataforma.combustible.repository.PrecioCombustibleRepository;
+import com.plataforma.combustible.repository.UsuarioRepository;
+import com.plataforma.combustible.repository.VentaRepository;
 
 @Service
 public class VentaService {
@@ -76,35 +90,47 @@ public class VentaService {
                 .findTopByEstacionIdAndCombustibleIdOrderByFechaDesc(estacion.getId(), combustible.getId())
                 .orElseThrow(() -> new RuntimeException("No hay precio registrado para " + combustible.getNombre()));
             
-            double precioUnitario = precioActual.getPrecio();
-            log.info("Precio unitario obtenido de BD: ${}", precioUnitario);
+            double precioOriginal = precioActual.getPrecio();
+            double cantidadVendida = request.getCantidad();
+            String tipoVehiculo = request.getTipoVehiculo();
+            
+            // 5. Calcular precio con subsidio (si aplica)
+            double precioUnitario = precioOriginal;
+            boolean subsidioAplicado = false;
+            
+            if (tipoVehiculo != null && !tipoVehiculo.isEmpty()) {
+                precioUnitario = calcularPrecioConSubsidio(tipoVehiculo, combustible.getNombre(), precioOriginal, cantidadVendida);
+                subsidioAplicado = precioUnitario != precioOriginal;
+                if (subsidioAplicado) {
+                    log.info("💰 Subsidio aplicado para {}: precio original ${} → precio con subsidio ${}", 
+                        tipoVehiculo, precioOriginal, precioUnitario);
+                }
+            }
 
-            // 5. Obtener inventario actual
+            // 6. Obtener inventario actual
             Inventario inventario = inventarioRepository
                 .findByEstacionIdAndCombustibleId(estacion.getId(), combustible.getId())
                 .orElseThrow(() -> new RuntimeException("No hay inventario registrado para " + combustible.getNombre()));
             
             double stockActual = inventario.getCantidadDisponible().doubleValue();
-            double cantidadVendida = request.getCantidad();
             log.info("Stock actual: {} galones, Venta: {} galones", stockActual, cantidadVendida);
 
-            // 6. Validar stock suficiente
+            // 7. Validar stock suficiente
             if (stockActual < cantidadVendida) {
                 throw new RuntimeException(String.format("Stock insuficiente. Disponible: %.2f galones, Solicitado: %.2f galones", 
                     stockActual, cantidadVendida));
             }
 
-            // 7. Calcular monto total
+            // 8. Calcular monto total
             double montoTotal = cantidadVendida * precioUnitario;
             log.info("Monto total calculado: ${}", montoTotal);
 
-            // 8. Actualizar inventario
+            // 9. Actualizar inventario
             double nuevoStock = stockActual - cantidadVendida;
             inventario.setCantidadDisponible(BigDecimal.valueOf(nuevoStock));
             inventarioRepository.save(inventario);
-            log.info("Inventario actualizado. Nuevo stock: {} galones", nuevoStock);
 
-            // 9. Registrar venta
+            // 10. Registrar venta con subsidio
             Venta venta = new Venta();
             venta.setEstacion(estacion);
             venta.setCombustible(combustible);
@@ -113,24 +139,24 @@ public class VentaService {
             venta.setPrecioUnitario(BigDecimal.valueOf(precioUnitario));
             venta.setMontoTotal(BigDecimal.valueOf(montoTotal));
             venta.setFechaVenta(LocalDateTime.now());
+            venta.setTipoVehiculo(tipoVehiculo);
+            venta.setSubsidioAplicado(subsidioAplicado);
             ventaRepository.save(venta);
             log.info("Venta registrada con ID: {}", venta.getId());
 
-            // 10. Registrar en auditoría
-            auditoriaService.registrar(
-                usuario.getEmail(),
-                "VENTA",
-                String.format("Venta de %.2f galones de %s por $%.2f", cantidadVendida, combustible.getNombre(), montoTotal),
-                "Venta",
-                venta.getId()
-            );
+            // 11. Registrar en auditoría
+            String detallesAuditoria = String.format("Venta de %.2f galones de %s por $%.2f", 
+                cantidadVendida, combustible.getNombre(), montoTotal);
+            if (subsidioAplicado) {
+                detallesAuditoria += String.format(" (Subsidio aplicado para %s: $%.2f → $%.2f)", 
+                    tipoVehiculo, precioOriginal, precioUnitario);
+            }
+            auditoriaService.registrar(usuario.getEmail(), "VENTA", detallesAuditoria, "Venta", venta.getId());
 
-            // 11. Verificar nivel bajo
+            // 12. Verificar nivel bajo
             boolean nivelBajo = nuevoStock < NIVEL_BAJO_GALONES;
-            String mensajeAlerta = null;
-            
             if (nivelBajo) {
-                mensajeAlerta = String.format("⚠️ ALERTA: El inventario de %s en %s está BAJO (%.2f galones). Umbral mínimo: %.0f galones.", 
+                String mensajeAlerta = String.format("⚠️ ALERTA: El inventario de %s en %s está BAJO (%.2f galones). Umbral mínimo: %.0f galones.", 
                     combustible.getNombre(), estacion.getNombre(), nuevoStock, NIVEL_BAJO_GALONES);
                 
                 Notificacion notificacion = new Notificacion();
@@ -140,11 +166,10 @@ public class VentaService {
                 notificacion.setFecha(LocalDateTime.now());
                 notificacion.setUsuario(usuario);
                 notificacionRepository.save(notificacion);
-                
                 log.warn(mensajeAlerta);
             }
 
-            // 12. Crear respuesta
+            // 13. Crear respuesta
             VentaResponse response = new VentaResponse();
             response.setId(venta.getId());
             response.setEstacionNombre(estacion.getNombre());
@@ -161,6 +186,44 @@ public class VentaService {
             log.error("Error en registro de venta: {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    // Agrega este método auxiliar
+    private double calcularPrecioConSubsidio(String tipoVehiculo, String combustible, double precioOriginal, double cantidad) {
+        // Reglas de subsidio según Decreto 1428/2025
+        if ("Gasolina Extra".equals(combustible)) {
+            return precioOriginal; // Sin subsidio
+        }
+        
+        if ("Gasolina Corriente".equals(combustible)) {
+            switch (tipoVehiculo) {
+                case "Particular":
+                case "Oficial":
+                case "Diplomático":
+                    return cantidad <= 10 ? precioOriginal * 0.85 : precioOriginal; // 15% descuento hasta 10 galones
+                case "Moto":
+                    return cantidad <= 5 ? precioOriginal * 0.85 : precioOriginal;
+                case "Taxi":
+                case "Servicio Público (Bus)":
+                case "Camión de carga":
+                    return cantidad <= 50 ? precioOriginal * 0.85 : precioOriginal;
+                default:
+                    return precioOriginal;
+            }
+        }
+        
+        if ("ACPM".equals(combustible)) {
+            switch (tipoVehiculo) {
+                case "Taxi":
+                case "Servicio Público (Bus)":
+                case "Camión de carga":
+                    return cantidad <= 30 ? precioOriginal * 0.90 : precioOriginal; // 10% descuento
+                default:
+                    return precioOriginal; // Sin subsidio
+            }
+        }
+        
+        return precioOriginal;
     }
 
     public List<VentaResponse> getHistorialVentas() {

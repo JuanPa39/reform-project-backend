@@ -36,6 +36,12 @@ public class Estacion {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
+    public Estacion() {
+    this.zona = "Centro"; // Valor por defecto
+    this.activa = true;
+    this.fechaRegistro = LocalDateTime.now();
+    
+}
     // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
