@@ -16,7 +16,7 @@ public class FacturaController {
     private final FacturaService facturaService;
 
     @GetMapping(value = "/venta/{ventaId}", produces = MediaType.APPLICATION_PDF_VALUE)
-    @PreAuthorize("hasRole('Empleado de estación') or hasRole('ADMIN') or hasRole('REGULADOR')")
+    @PreAuthorize("hasRole('Empleado de estación') or hasRole('ADMIN') or hasRole('REGULADOR') or hasRole('Cliente')")
     public ResponseEntity<byte[]> generarFactura(@PathVariable Long ventaId) {
         byte[] pdfBytes = facturaService.generarFacturaPdf(ventaId);
         String filename = "factura_" + String.format("%08d", ventaId) + ".pdf";
@@ -31,7 +31,7 @@ public class FacturaController {
     }
 
     @GetMapping(value = "/venta/{ventaId}/preview", produces = MediaType.APPLICATION_PDF_VALUE)
-    @PreAuthorize("hasRole('Empleado de estación') or hasRole('ADMIN') or hasRole('REGULADOR')")
+    @PreAuthorize("hasRole('Empleado de estación') or hasRole('ADMIN') or hasRole('REGULADOR') or hasRole('Cliente')")
     public ResponseEntity<byte[]> previsualizarFactura(@PathVariable Long ventaId) {
         byte[] pdfBytes = facturaService.generarFacturaPdf(ventaId);
         String filename = "factura_" + String.format("%08d", ventaId) + ".pdf";
