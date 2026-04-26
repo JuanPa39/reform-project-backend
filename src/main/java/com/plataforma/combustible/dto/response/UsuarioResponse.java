@@ -34,6 +34,6 @@ public class UsuarioResponse {
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
 
-    public boolean isEnabled() { return enabled; }    // ← agregar
+    public boolean isEnabled() { return enabled; }    
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 }

@@ -1,5 +1,7 @@
 package com.plataforma.combustible.repository;
 
+import com.plataforma.combustible.entity.Combustible;
+import com.plataforma.combustible.entity.Estacion;
 import com.plataforma.combustible.entity.PrecioCombustible;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +23,7 @@ public interface PrecioCombustibleRepository extends JpaRepository<PrecioCombust
     
     // ✅ AGREGAR ESTE MÉTODO
     boolean existsByEstacionIdAndCombustibleIdAndFecha(Long estacionId, Long combustibleId, LocalDate fecha);
+
+    Optional<PrecioCombustible> findTopByEstacionAndCombustibleOrderByFechaDesc(
+            Estacion estacion, Combustible combustible);
 }

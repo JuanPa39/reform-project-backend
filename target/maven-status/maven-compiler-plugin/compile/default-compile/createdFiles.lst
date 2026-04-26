@@ -19,6 +19,7 @@ com\plataforma\combustible\service\UsuarioService.class
 com\plataforma\combustible\repository\CombustibleRepository.class
 com\plataforma\combustible\repository\SubsidioRepository.class
 com\plataforma\combustible\dto\response\ReporteZonaResponse.class
+com\plataforma\combustible\service\FacturaService.class
 com\plataforma\combustible\dto\request\AsignarEstacionRequest.class
 com\plataforma\combustible\repository\VehiculoRepository.class
 com\plataforma\combustible\entity\Reporte.class
@@ -49,6 +50,7 @@ com\plataforma\combustible\dto\response\ErrorResponse.class
 com\plataforma\combustible\service\SubsidioService.class
 com\plataforma\combustible\service\ReporteService.class
 com\plataforma\combustible\controller\EstacionController.class
+com\plataforma\combustible\service\FacturaService$FacturaHeaderFooter.class
 com\plataforma\combustible\controller\AbastecimientoController.class
 com\plataforma\combustible\entity\Combustible.class
 com\plataforma\combustible\repository\NormativaRepository.class
@@ -75,6 +77,7 @@ com\plataforma\combustible\controller\AuthController.class
 com\plataforma\combustible\controller\UsuarioController.class
 com\plataforma\combustible\dto\request\ResetPasswordRequest.class
 com\plataforma\combustible\dto\response\PrecioResponse.class
+com\plataforma\combustible\controller\FacturaController.class
 com\plataforma\combustible\dto\response\VentaResponse.class
 com\plataforma\combustible\dto\request\InventarioRequest.class
 com\plataforma\combustible\repository\DistribuidorRepository.class
