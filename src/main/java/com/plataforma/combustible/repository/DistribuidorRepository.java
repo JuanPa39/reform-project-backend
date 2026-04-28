@@ -11,4 +11,5 @@ public interface DistribuidorRepository extends JpaRepository<Distribuidor, Long
     Optional<Distribuidor> findByNombre(String nombre);
     List<Distribuidor> findByZonaOperacion(String zonaOperacion);
     List<Distribuidor> findByActivoTrue();
+    Optional<Distribuidor> findByEmail(String email);
 }

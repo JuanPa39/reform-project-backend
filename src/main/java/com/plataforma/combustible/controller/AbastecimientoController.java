@@ -21,12 +21,14 @@ public class AbastecimientoController {
 
     // Solicitar abastecimiento (Empleado de estación)
     @PostMapping("/solicitar")
-    @PreAuthorize("hasRole('Empleado de estación') or hasRole('ADMIN')")
     public ResponseEntity<AbastecimientoResponse> solicitar(@RequestBody AbastecimientoRequest request) {
+        System.out.println("=== LLEGÓ AL CONTROLLER ===");
         try {
             AbastecimientoResponse response = abastecimientoService.solicitarAbastecimiento(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException e) {
+            System.out.println("=== ERROR: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
