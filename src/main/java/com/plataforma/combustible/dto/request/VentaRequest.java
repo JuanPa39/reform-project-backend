@@ -3,7 +3,7 @@ package com.plataforma.combustible.dto.request;
 public class VentaRequest {
     private String tipoCombustible;
     private double cantidad;
-    private String tipoVehiculo;  // ← AGREGAR: Particular, Taxi, Oficial, etc.
+    private String tipoVehiculo;  
     
     // Getters y Setters
     public String getTipoCombustible() { return tipoCombustible; }

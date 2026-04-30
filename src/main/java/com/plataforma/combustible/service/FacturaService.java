@@ -188,7 +188,7 @@ public class FacturaService {
             BigDecimal precioUnit    = nvl(venta.getPrecioUnitario());
             BigDecimal montoTotal    = nvl(venta.getMontoTotal());
             String     tipoComb      = venta.getCombustible() != null
-                    ? venta.getCombustible().getDescripcion() : "N/A";
+                    ? venta.getCombustible().getNombre() : "N/A";
 
             celdaDet(detTable, tipoComb,                   fNormal, filaColor, Element.ALIGN_LEFT);
             celdaDet(detTable, fmt(cantidad) + " L",       fNormal, filaColor, Element.ALIGN_CENTER);
