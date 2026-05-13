@@ -87,10 +87,36 @@ public class DataInitializer implements CommandLineRunner {
 
         // 2. ESTACIONES
         log.info("🏪 Creando estaciones...");
-        Estacion estacionCentro = crearEstacion("Estación Centro", "900123456-1", "Calle 10 #20-30", "6012345678",
-                "Lun-Dom 6:00-22:00");
-        Estacion estacionNorte = crearEstacion("Estación Norte", "900123456-2", "Carrera 15 #100-50", "6018765432",
-                "Lun-Dom 24h");
+        Estacion estacionCentro = crearEstacion("Estación Centro", "900123456-1",
+                "Calle 10 #20-30, Bogotá", "6012345678", "Lun-Dom 6:00-22:00",
+                4.5981, -74.0761);
+
+        Estacion estacionNorte = crearEstacion("Estación Norte", "900123456-2",
+                "Carrera 15 #100-50, Bogotá", "6018765432", "Lun-Dom 24h",
+                4.7110, -74.0721);
+        if (estacionCentro.getLatitud() == null) {
+            estacionCentro.setLatitud(4.5981);
+            estacionCentro.setLongitud(-74.0761);
+            estacionRepository.save(estacionCentro);
+            log.info("   📍 Coordenadas actualizadas: Estación Centro");
+        }
+        if (estacionNorte.getLatitud() == null) {
+            estacionNorte.setLatitud(4.7110);
+            estacionNorte.setLongitud(-74.0721);
+            estacionRepository.save(estacionNorte);
+            log.info("   📍 Coordenadas actualizadas: Estación Norte");
+        }
+
+        
+        // Estación Sur Bosa (id 36, creada manualmente)
+        estacionRepository.findByNit("90065432122050").ifPresent(e -> {
+            if (e.getLatitud() == null) {
+                e.setLatitud(4.6097);
+                e.setLongitud(-74.1469);
+                estacionRepository.save(e);
+                log.info("   📍 Coordenadas actualizadas: Estación Sur Bosa");
+            }
+        });
 
         // 3. USUARIOS
         log.info("👥 Creando usuarios...");
@@ -200,7 +226,8 @@ public class DataInitializer implements CommandLineRunner {
         });
     }
 
-    private Estacion crearEstacion(String nombre, String nit, String ubicacion, String telefono, String horario) {
+    private Estacion crearEstacion(String nombre, String nit, String ubicacion, String telefono,
+            String horario, Double latitud, Double longitud) {
         return estacionRepository.findByNit(nit).orElseGet(() -> {
             Estacion e = new Estacion();
             e.setNombre(nombre);
@@ -210,7 +237,9 @@ public class DataInitializer implements CommandLineRunner {
             e.setHorario(horario);
             e.setActiva(true);
             e.setFechaRegistro(LocalDateTime.now());
-            e.setZona("Centro"); // ← AGREGAR ZONA (puede ser "Norte", "Sur", "Centro", "Oriente", "Occidente")
+            e.setZona("Centro");
+            e.setLatitud(latitud);
+            e.setLongitud(longitud);
             log.info("   ✅ Estación creada: {}", nombre);
             return estacionRepository.save(e);
         });

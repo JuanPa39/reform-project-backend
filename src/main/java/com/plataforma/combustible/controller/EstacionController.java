@@ -120,7 +120,9 @@ public class EstacionController {
         response.setNit(estacion.getNit());
         response.setUbicacion(estacion.getUbicacion());
         response.setActiva(estacion.isActiva());
-        response.setZona(estacion.getZona());  // ← AGREGAR ZONA EN RESPUESTA
+        response.setZona(estacion.getZona());  
+        response.setLatitud(estacion.getLatitud());   
+        response.setLongitud(estacion.getLongitud());
         return response;
     }
 

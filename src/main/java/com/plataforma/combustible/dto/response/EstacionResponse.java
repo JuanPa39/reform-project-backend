@@ -6,7 +6,10 @@ public class EstacionResponse {
     private String nit;
     private String ubicacion;
     private boolean activa;
-    private String zona;  // ← AGREGAR
+    private String zona;  
+    private Double latitud;   
+    private Double longitud;  
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -25,4 +28,10 @@ public class EstacionResponse {
     
     public String getZona() { return zona; }
     public void setZona(String zona) { this.zona = zona; }
+
+    public Double getLatitud() { return latitud; }
+    public void setLatitud(Double latitud) { this.latitud = latitud; }
+
+    public Double getLongitud() { return longitud; }
+    public void setLongitud(Double longitud) { this.longitud = longitud; }
 }
