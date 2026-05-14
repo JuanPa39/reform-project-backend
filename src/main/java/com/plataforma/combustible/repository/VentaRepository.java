@@ -26,4 +26,8 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     
     @Query("SELECT COALESCE(SUM(v.montoTotal), 0) FROM Venta v WHERE v.estacion.id = :estacionId AND v.fechaVenta >= :fechaInicio")
     Double sumMontoTotalDelMes(@Param("estacionId") Long estacionId, @Param("fechaInicio") LocalDateTime fechaInicio);
+
+    // Agrega este método para consultar ventas por período sin estación específica
+    @Query("SELECT v FROM Venta v WHERE v.fechaVenta BETWEEN :inicio AND :fin")
+    List<Venta> findByFechaVentaBetween(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
 }

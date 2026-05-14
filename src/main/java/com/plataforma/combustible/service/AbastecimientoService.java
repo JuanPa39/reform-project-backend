@@ -170,4 +170,14 @@ public class AbastecimientoService {
         response.setEstado(a.getEstado());
         return response;
     }
+
+    public List<AbastecimientoResponse> getHistorialRecargas(Long estacionId, 
+                                                            LocalDateTime fechaInicio, 
+                                                            LocalDateTime fechaFin, 
+                                                            Long combustibleId) {
+        List<Abastecimiento> abastecimientos = abastecimientoRepository
+            .findHistorialRecargas(estacionId, fechaInicio, fechaFin, combustibleId);
+        
+        return abastecimientos.stream().map(this::convertToResponse).collect(Collectors.toList());
+    }
 }

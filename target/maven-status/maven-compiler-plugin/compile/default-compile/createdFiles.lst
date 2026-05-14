@@ -19,6 +19,8 @@ com\plataforma\combustible\service\UsuarioService.class
 com\plataforma\combustible\repository\CombustibleRepository.class
 com\plataforma\combustible\repository\SubsidioRepository.class
 com\plataforma\combustible\dto\response\ReporteZonaResponse.class
+com\plataforma\combustible\controller\CombustibleController.class
+com\plataforma\combustible\dto\response\CombustibleResponse.class
 com\plataforma\combustible\service\FacturaService.class
 com\plataforma\combustible\dto\request\AsignarEstacionRequest.class
 com\plataforma\combustible\repository\VehiculoRepository.class
