@@ -48,8 +48,10 @@ public class AbastecimientoService {
         Distribuidor distribuidor = distribuidorRepository.findById(request.getDistribuidorId())
             .orElseThrow(() -> new RuntimeException("Distribuidor no encontrado"));
         
-        Estacion estacion = estacionRepository.findById(request.getEstacionId())
-            .orElseThrow(() -> new RuntimeException("Estación no encontrada"));
+        Estacion estacion = usuario.getEstacion();
+            if (estacion == null) {
+                throw new RuntimeException("No tienes una estación asociada");
+        }
         
         Combustible combustible = combustibleRepository.findById(request.getCombustibleId())
             .orElseThrow(() -> new RuntimeException("Combustible no encontrado"));
