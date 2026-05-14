@@ -9,7 +9,7 @@ public class AbastecimientoResponse {
     private String combustibleNombre;
     private Double cantidadGalones;
     private LocalDateTime fecha;
-    private String estado;
+    private String estado; // COMPLETADO
 
     // Getters y Setters
     public Long getId() { return id; }

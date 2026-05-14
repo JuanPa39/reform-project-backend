@@ -1,5 +1,6 @@
 package com.plataforma.combustible.controller;
 
+import com.plataforma.combustible.dto.response.ReporteZonaResponse;
 import com.plataforma.combustible.entity.Usuario;
 import com.plataforma.combustible.repository.UsuarioRepository;
 import com.plataforma.combustible.service.ReporteService;
@@ -9,8 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reportes")
@@ -22,6 +25,22 @@ public class ReporteController {
     public ReporteController(ReporteService reporteService, UsuarioRepository usuarioRepository) {
         this.reporteService = reporteService;
         this.usuarioRepository = usuarioRepository;
+    }
+
+    // ============================================
+    // NUEVO ENDPOINT: Consumo por zona
+    // ============================================
+    @GetMapping("/consumo-por-zona")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('Empleado de estación') or hasRole('Entidad reguladora')")
+    public ResponseEntity<List<ReporteZonaResponse>> getConsumoPorZona(
+            @RequestParam(required = false) String fechaInicio,
+            @RequestParam(required = false) String fechaFin) {
+        
+        LocalDate inicio = fechaInicio != null ? LocalDate.parse(fechaInicio) : LocalDate.now().minusDays(30);
+        LocalDate fin = fechaFin != null ? LocalDate.parse(fechaFin) : LocalDate.now();
+        
+        List<ReporteZonaResponse> reportes = reporteService.generarReporteConsumoPorZona(inicio, fin);
+        return ResponseEntity.ok(reportes);
     }
 
     @GetMapping("/ventas/pdf")

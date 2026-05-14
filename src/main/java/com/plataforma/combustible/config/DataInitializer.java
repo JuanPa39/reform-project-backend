@@ -87,25 +87,16 @@ public class DataInitializer implements CommandLineRunner {
 
         // 2. ESTACIONES
         log.info("🏪 Creando estaciones...");
-        Estacion estacionCentro = crearEstacion("Estación Centro", "900123456-1",
-                "Calle 10 #20-30, Bogotá", "6012345678", "Lun-Dom 6:00-22:00",
-                4.5981, -74.0761);
+        Estacion estacionCentro = crearEstacion("Terpel La Mariana (Americas)", "900123456-1",
+                "Dg. 2b #85-10 Sur, Kennedy, Bogotá", "14280839", "Lun-Dom 6:00-22:00",
+                4.639482495615484, -74.15665998604527);
+                 log.info("   📍 Coordenadas actualizadas: Estación Centro");
 
-        Estacion estacionNorte = crearEstacion("Estación Norte", "900123456-2",
-                "Carrera 15 #100-50, Bogotá", "6018765432", "Lun-Dom 24h",
-                4.7110, -74.0721);
-        if (estacionCentro.getLatitud() == null) {
-            estacionCentro.setLatitud(4.5981);
-            estacionCentro.setLongitud(-74.0761);
-            estacionRepository.save(estacionCentro);
-            log.info("   📍 Coordenadas actualizadas: Estación Centro");
-        }
-        if (estacionNorte.getLatitud() == null) {
-            estacionNorte.setLatitud(4.7110);
-            estacionNorte.setLongitud(-74.0721);
-            estacionRepository.save(estacionNorte);
-            log.info("   📍 Coordenadas actualizadas: Estación Norte");
-        }
+        Estacion estacionNorte = crearEstacion("REDH PETROBRAS CALLE 45", "900123456-2",
+                "Cl. 45 #16-30, Bogotá", "12453767", "Lun-Dom 24h",
+                4.633196420950657, -74.07009541461899);
+                 log.info("   📍 Coordenadas actualizadas: Estación Norte");
+        
 
         
         // Estación Sur Bosa (id 36, creada manualmente)

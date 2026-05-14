@@ -4,15 +4,24 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.plataforma.combustible.dto.response.DetalleEstacionResponse;
+import com.plataforma.combustible.dto.response.ReporteZonaResponse;
+import com.plataforma.combustible.entity.Estacion;
 import com.plataforma.combustible.entity.Venta;
 import com.plataforma.combustible.repository.VentaRepository;
+
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReporteService {
@@ -185,4 +194,73 @@ public class ReporteService {
             throw new RuntimeException("Error al generar Excel: " + e.getMessage());
         }
     }
+
+    // En ReporteService.java, agrega este método:
+
+public List<ReporteZonaResponse> generarReporteConsumoPorZona(LocalDate fechaInicio, LocalDate fechaFin) {
+    // Convertir LocalDate a LocalDateTime para la consulta
+    LocalDateTime inicio = fechaInicio.atStartOfDay();
+    LocalDateTime fin = fechaFin.atTime(23, 59, 59);
+    
+    // Obtener todas las ventas del período
+    List<Venta> ventas = ventaRepository.findByFechaVentaBetween(inicio, fin);
+    
+    // Agrupar por zona de la estación
+    Map<String, ReporteZonaResponse> mapaZonas = new HashMap<>();
+    Map<String, Map<Long, DetalleEstacionResponse>> mapaDetalle = new HashMap<>();
+    
+    for (Venta venta : ventas) {
+        Estacion estacion = venta.getEstacion();
+        if (estacion == null) continue;
+        
+        String zona = estacion.getZona();
+        if (zona == null || zona.isEmpty()) zona = "Sin asignar";
+        
+        // Acumular por zona
+        ReporteZonaResponse zonaReporte = mapaZonas.computeIfAbsent(zona, k -> {
+            ReporteZonaResponse r = new ReporteZonaResponse();
+            r.setZona(k);
+            r.setTotalGalones(0);
+            r.setTotalVentas(0);
+            r.setDetalleEstaciones(new ArrayList<>());
+            return r;
+        });
+        
+        zonaReporte.setTotalGalones(zonaReporte.getTotalGalones() + venta.getCantidad().doubleValue());
+        zonaReporte.setTotalVentas(zonaReporte.getTotalVentas() + venta.getMontoTotal().doubleValue());
+        
+        // Acumular detalle por estación
+        Map<Long, DetalleEstacionResponse> detallePorEstacion = mapaDetalle.computeIfAbsent(zona, k -> new HashMap<>());
+        DetalleEstacionResponse detalle = detallePorEstacion.computeIfAbsent(estacion.getId(), k -> {
+            DetalleEstacionResponse d = new DetalleEstacionResponse();
+            d.setEstacionId(estacion.getId());
+            d.setEstacionNombre(estacion.getNombre());
+            d.setGalonesVendidos(0);
+            d.setMontoTotal(0);
+            return d;
+        });
+        
+        detalle.setGalonesVendidos(detalle.getGalonesVendidos() + venta.getCantidad().doubleValue());
+        detalle.setMontoTotal(detalle.getMontoTotal() + venta.getMontoTotal().doubleValue());
+    }
+    
+    // Construir respuesta final
+    List<ReporteZonaResponse> respuesta = new ArrayList<>();
+    for (Map.Entry<String, ReporteZonaResponse> entry : mapaZonas.entrySet()) {
+        String zona = entry.getKey();
+        ReporteZonaResponse reporte = entry.getValue();
+        
+        // Agregar detalles de estaciones
+        Map<Long, DetalleEstacionResponse> detallePorEstacion = mapaDetalle.get(zona);
+        if (detallePorEstacion != null) {
+            reporte.setDetalleEstaciones(new ArrayList<>(detallePorEstacion.values()));
+        }
+        respuesta.add(reporte);
+    }
+    
+    // Ordenar por zona
+    respuesta.sort((a, b) -> a.getZona().compareTo(b.getZona()));
+    
+    return respuesta;
+}
 }

@@ -8,6 +8,7 @@ C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\c
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\controller\AdminController.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\controller\AuditoriaController.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\controller\AuthController.java
+C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\controller\CombustibleController.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\controller\DisponibilidadController.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\controller\DistribuidorController.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\controller\EstacionController.java
@@ -32,6 +33,7 @@ C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\d
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\dto\request\ResetPasswordRequest.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\dto\request\VentaRequest.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\dto\response\AbastecimientoResponse.java
+C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\dto\response\CombustibleResponse.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\dto\response\DetalleEstacionResponse.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\dto\response\DisponibilidadResponse.java
 C:\Users\tiago\reform-project-backend\src\main\java\com\plataforma\combustible\dto\response\ErrorResponse.java
